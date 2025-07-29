@@ -1,0 +1,30 @@
+.cardContainer {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4.6rem;
+}
+
+.heading {
+  font-size: 3em;
+}
+
+.cartDetailsContainer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  background-color: gray;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.cartDetailsContainer h2 {
+  margin: 0 5px;
+}
+
+.section {
+  height: 100vh;
+  padding: 0 5rem;
+  /* width: 100vw; */
+}
