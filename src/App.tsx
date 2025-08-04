@@ -4,7 +4,6 @@ import viteLogo from "/vite.svg";
 // import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,22 +14,22 @@ function App() {
     getData();
   }, [loading]);
 
-  let submitForm = async (e) => {
+  let submitForm = async (e:any) => {
     setLoading(true);
     e.preventDefault();
     try {
-      const res = await fetch("https://groceries-to-go-back-end.vercel.app//api/users", {
-        method: "POST",
-        // headers: {
-        //   Accept: "application/json",
-        //   "Content-Type": "application/json",
-        // },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          password: password,
-        }),
-      });
+      // const res = await fetch("https://groceries-to-go-back-end.vercel.app/api/users", {
+      //   method: "POST",
+      //   // headers: {
+      //   //   Accept: "application/json",
+      //   //   "Content-Type": "application/json",
+      //   // },
+      //   body: JSON.stringify({
+      //     name: name,
+      //     email: email,
+      //     password: password,
+      //   }),
+      // });
       // res = await res.json();
       setLoading(false);
     } catch (error) {
@@ -42,11 +41,11 @@ function App() {
     setPassword("");
     setLoading(false);
   };
-  let submitDelete = async (e, id) => {
+  let submitDelete = async (e:any, id:any) => {
     setLoading(true);
     e.preventDefault();
     try {
-      const res = await fetch("https://groceries-to-go-back-end.vercel.app//api/users/delete", {
+      const res = await fetch("https://groceries-to-go-back-end.vercel.app/api/users/delete", {
         method: "POST",
         // headers: {
         // Accept: "application/json",
@@ -70,16 +69,16 @@ function App() {
   };
 
   async function getData() {
-    const url = "https://groceries-to-go-back-end.vercel.app//api/users";
+    const url = "https://groceries-to-go-back-end.vercel.app/api/users";
     try {
       const response = await fetch(url, { method: "GET" });
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
 
-      const { success, data } = await response.json();
+      const {  data } = await response.json();
       await setPostsState(data);
-    } catch (error) {
+    } catch (error:any) {
       console.error(error.message);
     }
   }
@@ -126,7 +125,7 @@ function App() {
         </label>
         <button type="submit">Submit</button>
       </form>
-      {postsState.map((element, index) => {
+      {postsState.map((element:any, index) => {
         return (
           <div key={index}>
             <p>{element.name}</p>

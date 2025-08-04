@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import { nanoid } from "@reduxjs/toolkit";
@@ -18,10 +18,10 @@ interface Customer {
 
 export default function Cart() {
   const [cookies] = useCookies(["token"]);
-  const items = useSelector((state) => state.cart.items);
-  const totalItems = useSelector((state) => state.cart.totalItems);
-  const cartTotal = useSelector((state) => state.cart.cartTotal);
-  const taxCostTotal = useSelector((state) => state.cart.taxCostTotal);
+  const items = useSelector((state:any) => state.cart.items);
+  const totalItems = useSelector((state:any) => state.cart.totalItems);
+  const cartTotal = useSelector((state:any) => state.cart.cartTotal);
+  const taxCostTotal = useSelector((state:any) => state.cart.taxCostTotal);
   const [customer, setCustomer] = useState<Customer>({
     name: "",
     phoneNumber: "",
@@ -31,7 +31,7 @@ export default function Cart() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const subTotal = (
     Math.round((Number(taxCostTotal) + Number(cartTotal)) * 100) / 100
@@ -76,7 +76,7 @@ export default function Cart() {
         const decodeCookie = await atob(cookies.token);
         const email = await JSON.parse(decodeCookie).email;
 
-        const response = await fetch("https://groceries-to-go-back-end.vercel.app//api/buy", {
+        const response = await fetch("https://groceries-to-go-back-end.vercel.app/api/buy", {
           method: "POST",
           body: JSON.stringify({
             user_id: email,
@@ -124,7 +124,7 @@ export default function Cart() {
 
               {items.length > 0 ? (
                 <div className="divide-y divide-gray-200">
-                  {items.map((item) => (
+                  {items.map((item:any) => (
                     <div key={item._id} className="p-6">
                       <Card {...item} />
                     </div>

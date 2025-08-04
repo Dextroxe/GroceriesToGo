@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export default function AccessDenied({ role }) {
+export default function AccessDenied({ role }:any) {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {

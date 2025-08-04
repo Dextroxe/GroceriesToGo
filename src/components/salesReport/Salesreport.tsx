@@ -27,7 +27,7 @@ import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
 export default function SalesReport() {
   const [data, setData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
-  const [orderData, setOrderData] = useState({ data: [] });
+  const [, setOrderData] = useState({ data: [] });
   const [barChartData, setBarChartData] = useState([]);
   const [revenueData, setRevenueData] = useState([]);
   const [taxData, setTaxData] = useState([]);
@@ -56,9 +56,9 @@ export default function SalesReport() {
 
       // Fetch all data in parallel
       const [productsRes, monthlyRes, ordersRes] = await Promise.all([
-        fetch("https://groceries-to-go-back-end.vercel.app//api/data"),
-        fetch("https://groceries-to-go-back-end.vercel.app//api/monthlyreport"),
-        fetch("https://groceries-to-go-back-end.vercel.app//api/order/orderdproduct"),
+        fetch("https://groceries-to-go-back-end.vercel.app/api/data"),
+        fetch("https://groceries-to-go-back-end.vercel.app/api/monthlyreport"),
+        fetch("https://groceries-to-go-back-end.vercel.app/api/order/orderdproduct"),
       ]);
 
       const productsData = await productsRes.json();
@@ -70,8 +70,8 @@ export default function SalesReport() {
       setOrderData(ordersData);
 
       // Process data for bar chart (order quantity by product)
-      const barChartMap = {};
-      ordersData?.data?.forEach((item) => {
+      const barChartMap:any = {};
+      ordersData?.data?.forEach((item:any) => {
         const name = item?.productInfo?.product_name;
         const quantity = item?.orderInfo?.quantity || 0;
 
@@ -84,7 +84,7 @@ export default function SalesReport() {
         }
       });
 
-      const barChartProcessed = Object.entries(barChartMap).map(
+      const barChartProcessed:any = Object.entries(barChartMap).map(
         ([productName, quantity]) => ({
           productName,
           quantity,
@@ -93,8 +93,8 @@ export default function SalesReport() {
       setBarChartData(barChartProcessed);
 
       // Process data for revenue chart
-      const revenueMap = {};
-      ordersData?.data?.forEach((item) => {
+      const revenueMap:any = {};
+      ordersData?.data?.forEach((item:any) => {
         const name = item?.productInfo?.product_name;
         const revenue = item?.orderInfo?.subtotal || 0;
 
@@ -107,8 +107,8 @@ export default function SalesReport() {
         }
       });
 
-      const revenueProcessed = Object.entries(revenueMap).map(
-        ([productName, revenue]) => ({
+      const revenueProcessed:any = Object.entries(revenueMap).map(
+        ([productName, revenue]:any) => ({
           productName,
           revenue: Number.parseFloat(revenue.toFixed(2)),
         })
@@ -116,8 +116,8 @@ export default function SalesReport() {
       setRevenueData(revenueProcessed);
 
       // Process data for tax contribution by category
-      const taxMap = {};
-      productsData.forEach((product) => {
+      const taxMap:any = {};
+      productsData.forEach((product:any) => {
         const category = product.category;
         const taxRate = product.tax_rate || 0;
 
@@ -130,8 +130,8 @@ export default function SalesReport() {
         }
       });
 
-      const taxProcessed = Object.entries(taxMap).map(
-        ([category, taxRate]) => ({
+      const taxProcessed:any = Object.entries(taxMap).map(
+        ([category, taxRate]:any) => ({
           category,
           taxRate: Number.parseFloat(taxRate.toFixed(2)),
         })
@@ -141,27 +141,27 @@ export default function SalesReport() {
       // Process data for stock alerts
       const stockAlerts = productsData
         .filter(
-          (product) => product.stock_quantity <= product.reorder_stock_level
+          (product:any) => product.stock_quantity <= product.reorder_stock_level
         )
-        .map((product) => ({
+        .map((product:any) => ({
           productName: product.product_name,
           currentStock: product.stock_quantity,
           reorderLevel: product.reorder_stock_level,
           stockDifference: product.reorder_stock_level - product.stock_quantity,
         }))
-        .sort((a, b) => b.stockDifference - a.stockDifference);
+        .sort((a:any, b:any) => b.stockDifference - a.stockDifference);
 
       setStockAlertData(stockAlerts);
 
       // Calculate summary statistics
       const totalRevenue = ordersData?.data?.reduce(
-        (sum, item) => sum + (item?.orderInfo?.subtotal || 0),
+        (sum:any, item:any) => sum + (item?.orderInfo?.subtotal || 0),
         0
       );
       const totalOrders = ordersData?.data?.length || 0;
       const totalProducts = productsData.length || 0;
       const totalTax = ordersData?.data?.reduce(
-        (sum, item) => sum + (item?.orderInfo?.tax_cost || 0),
+        (sum:any, item:any) => sum + (item?.orderInfo?.tax_cost || 0),
         0
       );
 
@@ -289,7 +289,7 @@ export default function SalesReport() {
                   >
                     {barChartData.map((entry, index) => (
                       <Cell
-                        key={`cell-${index}`}
+                        key={`cell-${index}-${entry}`}
                         fill={COLORS[index % COLORS.length]}
                       />
                     ))}
@@ -327,7 +327,7 @@ export default function SalesReport() {
                   >
                     {revenueData.map((entry, index) => (
                       <Cell
-                        key={`cell-${index}`}
+                        key={`cell-${index}-${entry}`}
                         fill={COLORS[(index + 2) % COLORS.length]}
                       />
                     ))}
@@ -402,14 +402,14 @@ export default function SalesReport() {
                   >
                     {monthlyData.map((entry, index) => (
                       <Cell
-                        key={`cell-${index}`}
+                        key={`cell-${index}-${entry}`}
                         fill={COLORS[index % COLORS.length]}
                       />
                     ))}
                   </Pie>
                   <Tooltip
-                    formatter={(value, name, props) => [
-                      `${value} products`,
+                    formatter={(value, props:any) => [
+                      `${value} products `,
                       props.payload.category,
                     ]}
                   />
@@ -441,7 +441,7 @@ export default function SalesReport() {
                     fillOpacity={0.6}
                   />
                   <Tooltip
-                    formatter={(value) => [
+                    formatter={(value:any) => [
                       `${(value * 100).toFixed(0)}%`,
                       "Tax Rate",
                     ]}
@@ -480,7 +480,7 @@ export default function SalesReport() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {stockAlertData.map((item, index) => (
+                    {stockAlertData.map((item:any, index) => (
                       <tr key={index}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {item.productName}

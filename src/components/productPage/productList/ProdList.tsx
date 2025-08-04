@@ -7,7 +7,6 @@ import axios from "axios";
 import Card from "./Card";
 import {
   MicroscopeIcon as MagnifyingGlassIcon,
-  PlusIcon,
   ShoppingCartIcon,
 } from "lucide-react";
 import { useCookies } from "react-cookie";
@@ -27,9 +26,10 @@ export default function ProdList() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies, ,] = useCookies(["token"]);
   let role = "";
   let email = "";
+  console.warn(role,email)
   if (cookies.token) {
     const decodeCookie = atob(cookies.token);
     role = JSON.parse(decodeCookie).role;
@@ -40,7 +40,7 @@ export default function ProdList() {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        const res = await axios("https://groceries-to-go-back-end.vercel.app//api/product");
+        const res = await axios("https://groceries-to-go-back-end.vercel.app/api/product");
         setProducts(res.data);
         setFilteredProducts(res.data);
       } catch (error) {

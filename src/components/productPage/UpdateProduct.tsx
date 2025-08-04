@@ -4,18 +4,18 @@ import { useNavigate } from "react-router";
 import axios from "axios";
 
 export default function UpdateProduct() {
-  const nameRef = useRef();
-  const priceRef = useRef();
-  const descRef = useRef();
-  const categoriesRef = useRef();
-  const imageRef = useRef();
+  const nameRef: any = useRef(null);
+  const priceRef: any = useRef(null);
+  const descRef: any = useRef(null);
+  const categoriesRef: any = useRef(null);
+  const imageRef: any = useRef(null);
 
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  function handleSubmit(e:any) {
     e.preventDefault();
     axios
-      .post("https://groceries-to-go-back-end.vercel.app//api/product", {
+      .post("https://groceries-to-go-back-end.vercel.app/api/product", {
         name: nameRef.current.value,
         price: priceRef.current.value,
         description: descRef.current.value,
@@ -32,7 +32,7 @@ export default function UpdateProduct() {
     <main className={styles.main}>
       <h2 className={styles.header}>Update Product</h2>
       <form
-        action={`https://groceries-to-go-back-end.vercel.app//api/product`}
+        action={`https://groceries-to-go-back-end.vercel.app/api/product`}
         method="post"
         className={styles.form}
         onSubmit={handleSubmit}

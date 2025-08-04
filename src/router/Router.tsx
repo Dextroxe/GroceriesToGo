@@ -2,11 +2,8 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Navigate,
-  createBrowserRouter,
-  RouterProvider,
+
 } from "react-router-dom";
-import App from "../App";
 import Receipt from "../pages/receipt";
 import { ManagerDashboard } from "../components/ManagerDashboard";
 // import ProdList from "../components/productPage/productList/ProdList";
@@ -18,14 +15,11 @@ import Salesreport from "../components/salesReport/Salesreport";
 import MainForm from "../components/signUpPage/MainForm";
 import UserTable from "../components/approvalPage/UserTable";
 import PrivateRoute from "./PrivateRoute";
-import { useAuth } from "../hooks/useAuth";
 import RoleRoute from "./RoleRoute";
 import { ROLES } from "../constant/enum";
 import NotFound from "../pages/notFound";
 import { Suspense, useEffect } from "react";
-import SideBar from "../components/sideBar/SideBar";
 import Profile from "../components/profilePage/Profile";
-import Navbar from "../components/landingPage/Navbar";
 import ProdList from "../components/productPage/productList/ProdList";
 import Cart from "../components/productPage/Cart";
 import NewProduct from "../components/productPage/NewPorduct";
@@ -44,11 +38,11 @@ const Router = () => {
   useEffect(() => {
     toast(";3");
     (async () => {
-      const res = await axios("https://groceries-to-go-back-end.vercel.app//api/cart");
+      const res = await axios("https://groceries-to-go-back-end.vercel.app/api/cart");
       const cart = res.data;
-      cart.forEach(async (item) => {
+      cart.forEach(async (item:any) => {
         const newRes = await axios(
-          `https://groceries-to-go-back-end.vercel.app//api/product/${item.product_id}`
+          `https://groceries-to-go-back-end.vercel.app/api/product/${item.product_id}`
         );
         const product = newRes.data;
         for (let i = 0; i < item.quantity; i++) {

@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { useCookies } from "react-cookie";
 import { tokenAge } from "../../constant/constants";
-import { redirect, useNavigate } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
+import {  useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 // import Navbar from "../landingPage/Navbar";
 
 const MainForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loginError, setLoginError] = useState("");
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-  const [user, setUser] = useState({});
-  const [role, setRole] = useState("");
+  const [, setCookie, ] = useCookies(["token"]);
+  const [, setUser] = useState({});
+  const [, setRole] = useState("");
   const navigate = useNavigate();
   const [signupError, setSignupError] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -51,7 +51,7 @@ const MainForm = () => {
       .matches(/[!@#$%^&*]/, "Must contain at least one special character")
       .required("Password is required"),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .oneOf([Yup.ref("password"), ""], "Passwords must match")
       .required("Confirm Password is required"),
   });
 
@@ -67,7 +67,7 @@ const MainForm = () => {
   const functionpop = async ({ username }: { username: string }) => {
     try {
       // In a real app, adjust the URL as needed
-      const response = await fetch(`https://groceries-to-go-back-end.vercel.app//api/checkUsername`, {
+      const response = await fetch(`https://groceries-to-go-back-end.vercel.app/api/checkUsername`, {
         method: "POST",
         body: JSON.stringify({
           username: username.toLowerCase(),
@@ -97,7 +97,7 @@ const MainForm = () => {
   const functionpopEmail = async ({ email }: { email: string }) => {
     try {
       // In a real app, adjust the URL as needed
-      const response = await fetch(`https://groceries-to-go-back-end.vercel.app//api/checkEmail`, {
+      const response = await fetch(`https://groceries-to-go-back-end.vercel.app/api/checkEmail`, {
         method: "POST",
         body: JSON.stringify({
           email: email.toLowerCase(),
@@ -125,12 +125,12 @@ const MainForm = () => {
     }
   };
 
-  const handleSignup = async (values) => {
+  const handleSignup = async (values:any) => {
     const { username, first_name, last_name, phone_number, email, password } =
       values;
     try {
       // In a real app, adjust the URL as needed
-      const response = await fetch(`https://groceries-to-go-back-end.vercel.app//api/auth/register`, {
+      const response = await fetch(`https://groceries-to-go-back-end.vercel.app/api/auth/register`, {
         method: "POST",
         body: JSON.stringify({
           username: username,
@@ -160,12 +160,12 @@ const MainForm = () => {
   };
   // console.log("user info:", user);
   // console.log("user role info:", role);
-  const handleLogin = async (values) => {
+  const handleLogin = async (values:any) => {
     const { email, password } = values;
     try {
       // In a real app, adjust the URL as needed
       const response = await fetch(
-        `https://groceries-to-go-back-end.vercel.app//api/auth/login/${email}/${password}`,
+        `https://groceries-to-go-back-end.vercel.app/api/auth/login/${email}/${password}`,
         {
           method: "GET",
         }

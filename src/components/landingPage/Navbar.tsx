@@ -1,9 +1,7 @@
-import React from "react";
-import { Link, redirect } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
 const Navbar = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies, , removeCookie] = useCookies(["token"]);
 
   let role = "";
   if (cookies.token) {

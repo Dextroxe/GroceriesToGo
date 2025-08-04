@@ -1,5 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import App from "../App";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Receipt from "../pages/receipt";
 import { ManagerDashboard } from "../components/ManagerDashboard";
 import ProdList from "../components/productPage/productList/ProdList";
