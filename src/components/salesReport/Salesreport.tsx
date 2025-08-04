@@ -410,7 +410,7 @@ export default function SalesReport() {
                   <Tooltip
                     formatter={(value, props:any) => [
                       `${value} products `,
-                      props.payload.category,
+                      props?.payload?.category,
                     ]}
                   />
                   <Legend />
