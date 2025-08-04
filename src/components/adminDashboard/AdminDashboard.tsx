@@ -146,7 +146,7 @@ export function AdminDashboard() {
     if (selectedCategory !== "all") {
       // setFilteredCategory(products?.[0]?.data?.products);
       setFilteredCategory(
-        products?.[0]?.data?.products.filter((product:any) =>
+        products?.[0]?.data?.products.filter((product: any) =>
           product.category
             ?.toLowerCase()
             .includes(selectedCategory?.toLowerCase())
@@ -170,7 +170,7 @@ export function AdminDashboard() {
     if (search) {
       const lowerCaseQuery = search.toLowerCase();
       setFilteredCategory(
-        products?.[0]?.data?.products?.filter((product:any) =>
+        products?.[0]?.data?.products?.filter((product: any) =>
           product.product_name.toLowerCase().includes(lowerCaseQuery)
         )
       );
@@ -191,7 +191,7 @@ export function AdminDashboard() {
   }, [selectedCategory, search]);
 
   // Update stock for a selected product
-  const updateStock = async (product_id:any, newQuantity:any) => {
+  const updateStock = async (product_id: any, newQuantity: any) => {
     if (!selectedProduct || newQuantity < 0) return;
     console.log(product_id, newQuantity);
     try {
@@ -205,8 +205,8 @@ export function AdminDashboard() {
 
       if (response.ok) {
         const updatedProduct: Product = await response.json();
-        setProducts((prevProducts:any) =>
-          prevProducts.map((product:any) =>
+        setProducts((prevProducts: any) =>
+          prevProducts.map((product: any) =>
             product.product_id === updatedProduct.product_id
               ? { ...product, quantity: newQuantity }
               : product
@@ -223,8 +223,8 @@ export function AdminDashboard() {
       console.error("Error updating stock:", error);
 
       // For demo purposes, update the product locally
-      setProducts((prevProducts:any) =>
-        prevProducts.map((product:any) =>
+      setProducts((prevProducts: any) =>
+        prevProducts.map((product: any) =>
           product.product_id === selectedProduct.product_id
             ? { ...product, quantity: newQuantity }
             : product
@@ -325,12 +325,20 @@ export function AdminDashboard() {
   };
 
   // Get unique categories
-  const categories = [
-    "all",
-    ...Array.from(
-      new Set(products?.[0]?.data.products?.map((product:any) => product.category))
-    ),
-  ];
+  const getCategories = (): string[] => {
+    const productList = products?.[0]?.data?.products || [];
+    const categorySet = new Set<string>();
+
+    productList.forEach((product: Product) => {
+      if (product.category && typeof product.category === 'string') {
+        categorySet.add(product.category);
+      }
+    });
+
+    return ["all", ...Array.from(categorySet)];
+  };
+
+  const categories: string[] = getCategories();
 
   // Calculate dashboard stats
   const totalProducts =
@@ -498,18 +506,17 @@ export function AdminDashboard() {
                       </button>
                       {isCategoryDropdownOpen && (
                         <div className="absolute right-0 z-10 mt-2 w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 max-h-60 overflow-auto">
-                          {categories.map((category) => (
+                          {categories.map((category: string) => (
                             <button
-                              key={category as any}
+                              key={category}
                               onClick={() => {
-                                setSelectedCategory(category as any);
+                                setSelectedCategory(category);
                                 setIsCategoryDropdownOpen(false);
                               }}
-                              className={`block w-full px-4 py-2 text-left text-sm ${
-                                selectedCategory === category
-                                  ? "bg-blue-100 text-blue-900"
-                                  : "text-gray-700 hover:bg-gray-50"
-                              }`}
+                              className={`block w-full px-4 py-2 text-left text-sm ${selectedCategory === category
+                                ? "bg-blue-100 text-blue-900"
+                                : "text-gray-700 hover:bg-gray-50"
+                                }`}
                             >
                               {category === "all" ? "All Categories" : category}
                             </button>
@@ -599,7 +606,7 @@ export function AdminDashboard() {
                           </td>
                         </tr>
                       ) : (
-                        filterCategory?.map((product:any, index) => (
+                        filterCategory?.map((product: any, index) => (
                           <tr key={index} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {product?.product_name}
@@ -618,7 +625,7 @@ export function AdminDashboard() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                               <div className="flex items-center justify-end">
                                 {product?.stock_quantity <
-                                product?.reorder_stock_level  ? (
+                                  product?.reorder_stock_level ? (
                                   <span className="inline-flex items-center mr-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                     Low
                                   </span>
@@ -1021,7 +1028,7 @@ export function AdminDashboard() {
                               src={imagePreview || "/placeholder.svg"}
                               alt="Product preview"
                               className="w-full h-full object-contain"
-                              onError={(e:any) => {
+                              onError={(e: any) => {
                                 e.currentTarget.onerror = null;
                                 e.currentTarget.src = ""; // Clear the src
                                 e.currentTarget.alt = "Image not available";
