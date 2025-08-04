@@ -1,11 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
 const SideBar = () => {
   // ${
   //     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
   //   }
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies, , ] = useCookies(["token"]);
   let role = "";
   let email = "";
   if (cookies.token) {
@@ -13,7 +12,7 @@ const SideBar = () => {
     role = JSON.parse(decodeCookie).role;
     email = JSON.parse(decodeCookie).email;
   }
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   return (
     <div
       className={`sticky top-0 absolute flex flex-col  w-80 h-full bg-white border-r border-gray-200 `}

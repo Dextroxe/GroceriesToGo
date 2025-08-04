@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 import AccessDenied from "../components/UI/AccessDenied";
 
 const RoleRoute = ({ allowedRoles, children }: any) => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies, ,] = useCookies(["token"]);
   let role = "";
   if (cookies.token) {
     const decodeCookie = atob(cookies.token);

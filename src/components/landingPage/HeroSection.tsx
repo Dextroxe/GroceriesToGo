@@ -1,4 +1,3 @@
-import React from "react";
 import heroImage from "../../assets/hero-image.png"; // Replace with actual image
 
 const HeroSection = () => {

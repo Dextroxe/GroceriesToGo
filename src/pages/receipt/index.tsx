@@ -10,16 +10,16 @@ export interface Root {
 }
 
 export interface Data {
-  receipts: Receipt[];
+  receipts: ReceiptData[];
   items: Item[];
 }
 
-export interface Receipt {
+export interface ReceiptData {
   _id: string;
   order_id: string;
   internal_user_id: string;
-  payment_method: { type: String };
-  phone_number: { type: Number };
+  payment_method: string;
+  phone_number: number;
   received_by: string;
   tax_cost: number;
   subtotal: number;
@@ -36,8 +36,6 @@ export interface Item {
 export interface Item2 {
   _id: string;
   order_id: string;
-  // internal_user_id: string;
-
   createdAt: string;
   received_by: string;
   product_id: number;
@@ -65,101 +63,71 @@ export interface Product {
 }
 
 export default function ReceiptPage() {
-  const [loading, setLoading] = useState(false);
-  const [postsState, setPostsState] = useState<Data>([]);
+  const [loading] = useState(false);
+  const [postsState, setPostsState] = useState<Data | null>(null);
   const orderId = localStorage.getItem("order_id");
+  
   useEffect(() => {
     getData();
   }, [loading]);
 
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-  let role = "";
-  let email = "";
+  const [cookies] = useCookies(["token"]);
+  let role: any = "";
+  let email:any = "";
+  console.log(role,email)
   if (cookies.token) {
     const decodeCookie = atob(cookies.token);
-    role = JSON.parse(decodeCookie).role;
-    email = JSON.parse(decodeCookie).email;
+    const decoded = JSON.parse(decodeCookie);
+    role = decoded.role;
+    email = decoded.email;
   }
-  function printDiv(divId) {
-    var printContents = document.getElementById(divId).innerHTML;
-    var originalContents = document.body.innerHTML;
+
+  function printDiv(divId: string) {
+    const printElement = document.getElementById(divId);
+    if (!printElement) return;
+    
+    const printContents = printElement.innerHTML;
+    const originalContents = document.body.innerHTML;
 
     document.body.innerHTML = printContents;
-
     window.print();
-
     document.body.innerHTML = originalContents;
   }
 
   async function getData() {
-    const url = `https://groceries-to-go-back-end.vercel.app//api/receipt/fetch/${orderId}`;
+    const url = `https://groceries-to-go-back-end.vercel.app/api/receipt/fetch/${orderId}`;
     try {
       const response = await fetch(url, { method: "GET" });
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-      let Root: Root = await response.json();
-
-      const { success, data } = Root;
-      await setPostsState(data);
-    } catch (error) {
+      const root: Root = await response.json();
+      const { data } = root;
+      setPostsState(data);
+    } catch (error: any) {
       console.error(error.message);
     }
   }
-  postsState?.receipts?.map((element) => {
-    console.log(element._id);
-  });
-  // Sample data - in a real app, this would come from your database or state
-  const receipt = {
-    id: "INV-2023-1234",
-    date: "March 20, 2025",
-    cashier: "Someone Name",
-    customer: {
-      name: "Abhishek kr.",
-      phone: "1234-561-233",
-    },
-    items: [
-      {
-        id: 1,
-        name: "Item 1",
-        quantity: 2,
-        price: 24.99,
-      },
-      {
-        id: 2,
-        name: "Item 2",
-        quantity: 1,
-        price: 59.99,
-      },
-      {
-        id: 3,
-        name: "Item 3",
-        quantity: 1,
-        price: 29.99,
-      },
-      {
-        id: 4,
-        name: "Item 4",
-        quantity: 1,
-        price: 15.99,
-      },
-    ],
-    subtotal: 155.95,
-    tax: 12.48,
-    total: 168.43,
-    paymentMethod: "Credit Card",
-  };
 
-  // Calculate totals
-  // const subtotal = receipt.items.reduce(
-  //   (sum, item) => sum + item.price * item.quantity,
-  //   0
-  // );
-  const createdAt = postsState.items?.[0].item.createdAt;
-  var date = new Date(createdAt);
+  // Debug logging moved outside JSX
+  useEffect(() => {
+    if (postsState?.receipts) {
+      postsState.receipts.forEach((element) => {
+        console.log(element._id);
+      });
+    }
+    if (postsState?.items) {
+      console.log(postsState.items);
+    }
+    console.log(postsState);
+  }, [postsState]);
+
+  const createdAt = postsState?.items?.[0]?.item?.createdAt;
+  const date = createdAt ? new Date(createdAt) : new Date();
+
   return (
     <div
-      className="min-h-screen bg-gray-50 flex items-center justify-center p-4 "
+      className="min-h-screen bg-gray-50 flex items-center justify-center p-4"
       id="printableArea"
     >
       <div className="bg-white max-w-2xl w-full mx-auto shadow-sm border rounded-lg overflow-hidden">
@@ -170,7 +138,7 @@ export default function ReceiptPage() {
               <div className="bg-gray-100 p-2 rounded-md">
                 <Receipt className="h-6 w-6" />
               </div>
-              <div className="flex flex-col ">
+              <div className="flex flex-col">
                 <h1 className="text-xl font-bold">GroceriesToGo</h1>
                 <p className="text-sm text-gray-500">Premium Apparel</p>
               </div>
@@ -207,7 +175,7 @@ export default function ReceiptPage() {
               <div className="text-sm space-y-1">
                 <p>
                   <span className="text-gray-500">Receipt No:</span>{" "}
-                  {postsState?.receipts?.[0]._id}
+                  {postsState?.receipts?.[0]?._id}
                 </p>
                 <p>
                   <span className="text-gray-500">Cashier:</span> {email}
@@ -219,19 +187,18 @@ export default function ReceiptPage() {
               <div className="text-sm space-y-1">
                 <p>
                   <span className="text-gray-500">
-                    Name: {postsState?.receipts?.[0].received_by}
-                  </span>{" "}
+                    Name: {postsState?.receipts?.[0]?.received_by}
+                  </span>
                 </p>
                 <p>
                   <span className="text-gray-500">Phone:</span>{" "}
-                  {postsState?.receipts?.[0].phone_number}
+                  {postsState?.receipts?.[0]?.phone_number}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Items Table */}
-          {console.log(postsState?.items)}
           <div>
             <h2 className="font-semibold mb-2">Purchased Items</h2>
             <div className="border rounded-md overflow-hidden">
@@ -265,7 +232,6 @@ export default function ReceiptPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {console.log(postsState)}
                   {postsState?.items?.map((item) => (
                     <tr key={item.item._id}>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
@@ -298,7 +264,7 @@ export default function ReceiptPage() {
                       Subtotal
                     </td>
                     <td className="px-4 py-2 text-sm text-gray-900 text-right font-medium">
-                      ${postsState?.receipts?.[0].subtotal}
+                      ${postsState?.receipts?.[0]?.subtotal}
                     </td>
                   </tr>
                   <tr>
@@ -309,7 +275,7 @@ export default function ReceiptPage() {
                       Tax (8%)
                     </td>
                     <td className="px-4 py-2 text-sm text-gray-900 text-right font-medium">
-                      ${postsState?.receipts?.[0].tax_cost}
+                      ${postsState?.receipts?.[0]?.tax_cost}
                     </td>
                   </tr>
                   <tr>
@@ -321,9 +287,11 @@ export default function ReceiptPage() {
                     </td>
                     <td className="px-4 py-2 text-sm text-gray-900 text-right font-bold">
                       $
-                      {(
-                        Math.round(postsState?.receipts?.[0].total * 100) / 100
-                      ).toFixed(2)}
+                      {postsState?.receipts?.[0]?.total
+                        ? (
+                            Math.round(postsState.receipts[0].total * 100) / 100
+                          ).toFixed(2)
+                        : "0.00"}
                     </td>
                   </tr>
                 </tfoot>
@@ -337,16 +305,18 @@ export default function ReceiptPage() {
               <div>
                 <h2 className="font-semibold">Payment Method</h2>
                 <p className="text-sm">
-                  {postsState?.receipts?.[0].payment_method}
+                  {postsState?.receipts?.[0]?.payment_method}
                 </p>
               </div>
               <div className="text-right">
                 <h2 className="font-semibold">Amount Paid</h2>
                 <p className="text-xl font-bold">
                   $
-                  {(
-                    Math.round(postsState?.receipts?.[0].total * 100) / 100
-                  ).toFixed(2)}
+                  {postsState?.receipts?.[0]?.total
+                    ? (
+                        Math.round(postsState.receipts[0].total * 100) / 100
+                      ).toFixed(2)
+                    : "0.00"}
                 </p>
               </div>
             </div>

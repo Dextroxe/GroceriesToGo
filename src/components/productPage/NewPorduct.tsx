@@ -34,7 +34,7 @@ export default function NewProduct() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     axios
-      .post("https://groceries-to-go-back-end.vercel.app//api/product", {
+      .post("https://groceries-to-go-back-end.vercel.app/api/product", {
         image_url: imageRef.current?.value,
         product_name: nameRef.current?.value,
         description: descRef.current?.value,

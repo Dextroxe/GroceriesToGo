@@ -16,19 +16,18 @@ export default function ProductCard({
   quantity = 0,
   setProducts,
   setFilteredProducts,
-}) {
+}:any) {
   const dispatch = useDispatch();
-  const [cookies] = useCookies(["token"]);
+  const [cookies,] = useCookies<any>(["token"]);
 
   let role = "";
   let email = "";
-
+  console.log(email,role)
   if (cookies.token) {
     const decodeCookie = atob(cookies.token);
     role = JSON.parse(decodeCookie).role;
     email = JSON.parse(decodeCookie).email;
   }
-
   function handleAddToCart() {
     dispatch(
       cartActions.addItem({
@@ -40,7 +39,7 @@ export default function ProductCard({
       })
     );
     axios
-      .post(`https://groceries-to-go-back-end.vercel.app//api/cart?id=${_id}`)
+      .post(`https://groceries-to-go-back-end.vercel.app/api/cart?id=${_id}`)
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   }
@@ -56,7 +55,7 @@ export default function ProductCard({
       })
     );
     axios
-      .post(`https://groceries-to-go-back-end.vercel.app//api/cart?id=${_id}`)
+      .post(`https://groceries-to-go-back-end.vercel.app/api/cart?id=${_id}`)
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   }
@@ -72,7 +71,7 @@ export default function ProductCard({
       })
     );
     axios
-      .delete(`https://groceries-to-go-back-end.vercel.app//api/cart?id=${_id}`)
+      .delete(`https://groceries-to-go-back-end.vercel.app/api/cart?id=${_id}`)
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   }
@@ -87,14 +86,14 @@ export default function ProductCard({
       );
 
       axios
-        .delete(`https://groceries-to-go-back-end.vercel.app//api/product/${_id}`)
+        .delete(`https://groceries-to-go-back-end.vercel.app/api/product/${_id}`)
         .then((res) => {
           console.log(res);
-          setProducts((prevProducts) =>
-            prevProducts.filter((product) => product._id !== _id)
+          setProducts((prevProducts:any) =>
+            prevProducts.filter((product:any) => product._id !== _id)
           );
-          setFilteredProducts((prevProducts) =>
-            prevProducts.filter((product) => product._id !== _id)
+          setFilteredProducts((prevProducts:any) =>
+            prevProducts.filter((product:any) => product._id !== _id)
           );
         })
         .catch((err) => console.log(err));

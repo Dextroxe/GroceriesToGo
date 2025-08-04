@@ -1,4 +1,4 @@
-const AccessDenied = ({ role }) => {
+const AccessDenied = ({ role }:any) => {
   return (
     <div className=" text-xl flex flex-col justify-center items-center">
       <p className="text-red-600">Access Denied</p>

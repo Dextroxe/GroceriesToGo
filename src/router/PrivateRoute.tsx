@@ -2,12 +2,11 @@
 "use client";
 import { Navigate, Outlet } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { decrypt } from "../lib/util";
 import SideBar from "../components/sideBar/SideBar";
 import Commonheader from "../components/header/Header";
 
 const PrivateRoute = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies, , ] = useCookies(["token"]);
 
   // const  isAuthenticated  = useAuthCheck();
   // const auth = useSelector((state: any) => state.auth.auth);

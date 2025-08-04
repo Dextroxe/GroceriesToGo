@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import toast, { Toaster } from "react-hot-toast";
 
 interface Product {
   productId: string;
@@ -14,23 +13,23 @@ interface Product {
 
 export function StaffDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [, setFilteredProducts] = useState<Product[]>([]);
   const [totalSum, setTotalSum] = useState(0);
   const [totalStockQnt, setTotalStockQnt] = useState(0);
   const [newQuantity, setNewQuantity] = useState<number>(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortConfig, setSortConfig] = useState<{
+  const [searchQuery, ] = useState("");
+  const [sortConfig, ] = useState<{
     key: keyof Product | null;
     direction: "ascending" | "descending" | null;
   }>({ key: null, direction: null });
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [selectedCategory, ] = useState<string>("all");
+  const [, setIsLoading] = useState(true);
+  const [, setIsSidebarOpen] = useState(true);
+  const [, setIsUserMenuOpen] = useState(false);
+  const [, setIsCategoryDropdownOpen] = useState(false);
+  const [, setIsFilterDropdownOpen] = useState(false);
   const [lowStockItems, setLowStockItems] = useState(0);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -91,7 +90,7 @@ export function StaffDashboard() {
       try {
         // In a real app, adjust the URL as needed
         const response = await fetch(
-          "https://groceries-to-go-back-end.vercel.app//api/product/fetchDashboardDetails",
+          "https://groceries-to-go-back-end.vercel.app/api/product/fetchDashboardDetails",
           {
             method: "GET",
           }
@@ -162,7 +161,7 @@ export function StaffDashboard() {
     try {
       // In a real app, adjust the URL as needed
       const response = await fetch(
-        "https://groceries-to-go-back-end.vercel.app//api/product/fetchDashboardDetails",
+        "https://groceries-to-go-back-end.vercel.app/api/product/fetchDashboardDetails",
         {
           method: "PUT",
           headers: {
@@ -207,20 +206,20 @@ export function StaffDashboard() {
     }
   };
 
-  // Handle sorting
-  const requestSort = (key: keyof Product) => {
-    let direction: "ascending" | "descending" | null = "ascending";
+  // // Handle sorting
+  // const requestSort = (key: keyof Product) => {
+  //   let direction: "ascending" | "descending" | null = "ascending";
 
-    if (sortConfig.key === key) {
-      if (sortConfig.direction === "ascending") {
-        direction = "descending";
-      } else if (sortConfig.direction === "descending") {
-        direction = null;
-      }
-    }
+  //   if (sortConfig.key === key) {
+  //     if (sortConfig.direction === "ascending") {
+  //       direction = "descending";
+  //     } else if (sortConfig.direction === "descending") {
+  //       direction = null;
+  //     }
+  //   }
 
-    setSortConfig({ key, direction });
-  };
+  //   setSortConfig({ key, direction });
+  // };
 
   // Get unique categories
   const categories = [
@@ -231,51 +230,51 @@ export function StaffDashboard() {
 
   // Calculate dashboard stats
   const totalProducts = products.length;
-  const totalStock = products.reduce(
-    (sum, product) => sum + product.quantity,
-    0
-  );
-  const totalValue = products.reduce(
-    (sum, product) => sum + product.costPrice * product.quantity,
-    0
-  );
+  // const totalStock = products.reduce(
+  //   (sum, product) => sum + product.quantity,
+  //   0
+  // );
+  // const totalValue = products.reduce(
+  //   (sum, product) => sum + product.costPrice * product.quantity,
+  //   0
+  // );
 
   // Get sort indicator
-  const getSortIndicator = (key: keyof Product) => {
-    if (sortConfig.key !== key) return null;
+  // const getSortIndicator = (key: keyof Product) => {
+  //   if (sortConfig.key !== key) return null;
 
-    return sortConfig.direction === "ascending" ? (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="ml-1 h-4 w-4 inline"
-      >
-        <path d="m18 15-6-6-6 6" />
-      </svg>
-    ) : (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="ml-1 h-4 w-4 inline"
-      >
-        <path d="m6 9 6 6 6-6" />
-      </svg>
-    );
-  };
+  //   return sortConfig.direction === "ascending" ? (
+  //     <svg
+  //       xmlns="http://www.w3.org/2000/svg"
+  //       width="16"
+  //       height="16"
+  //       viewBox="0 0 24 24"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       className="ml-1 h-4 w-4 inline"
+  //     >
+  //       <path d="m18 15-6-6-6 6" />
+  //     </svg>
+  //   ) : (
+  //     <svg
+  //       xmlns="http://www.w3.org/2000/svg"
+  //       width="16"
+  //       height="16"
+  //       viewBox="0 0 24 24"
+  //       fill="none"
+  //       stroke="currentColor"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
+  //       strokeLinejoin="round"
+  //       className="ml-1 h-4 w-4 inline"
+  //     >
+  //       <path d="m6 9 6 6 6-6" />
+  //     </svg>
+  //   );
+  // };
 
   return (
     <div className="flex min-h-screen bg-gray-50">

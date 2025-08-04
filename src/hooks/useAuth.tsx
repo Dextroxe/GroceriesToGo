@@ -1,15 +1,15 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null) as any;
 
-const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }: any) => {
   // State to hold the authentication token
   const [token, setToken_] = useState(localStorage.getItem("token"));
   //   const [token, setToken_] = useState("userHere");
 
   // Function to set the authentication token
-  const setToken = (newToken) => {
+  const setToken = (newToken: any) => {
     setToken_(newToken);
   };
 

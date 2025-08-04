@@ -37,7 +37,7 @@ export default function UserTable() {
   // State for users with their roles
   const [usersWithRoles, setUsersWithRoles] = useState<UserWithRole[]>([]);
   const [editUser, setEditUser] = useState<UserWithRole | null>(null);
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  // const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [availableRoles, setAvailableRoles] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -46,7 +46,7 @@ export default function UserTable() {
     const fetchUserData = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`https://groceries-to-go-back-end.vercel.app//api/users`);
+        const response = await fetch(`https://groceries-to-go-back-end.vercel.app/api/users`);
         if (!response.ok) {
           throw new Error(`HTTP error: Status ${response.status}`);
         }
@@ -60,7 +60,7 @@ export default function UserTable() {
           // const uniqueRoles = Array.from(
           //   new Map(roles.map((role) => [role._id, role])).values()
           // );
-          setAvailableRoles(roles);
+          setAvailableRoles(roles as any);
         }
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -83,7 +83,7 @@ export default function UserTable() {
         status: newStatus,
       };
 
-      const response = await fetch(`https://groceries-to-go-back-end.vercel.app//api/users/update`, {
+      const response = await fetch(`https://groceries-to-go-back-end.vercel.app/api/users/update`, {
         method: "POST",
         body: JSON.stringify({
           user_id: userWithRole.user._id,
@@ -116,7 +116,7 @@ export default function UserTable() {
     try {
       console.log(editUser);
       if (editUser) {
-        const response = await fetch(`https://groceries-to-go-back-end.vercel.app//api/users/update`, {
+        const response = await fetch(`https://groceries-to-go-back-end.vercel.app/api/users/update`, {
           method: "POST",
           body: JSON.stringify({
             user_id: editUser.user._id,
@@ -124,7 +124,7 @@ export default function UserTable() {
           }),
         });
         const responseRole = await fetch(
-          `https://groceries-to-go-back-end.vercel.app//api/role/update`,
+          `https://groceries-to-go-back-end.vercel.app/api/role/update`,
           {
             method: "POST",
             body: JSON.stringify({
@@ -158,7 +158,7 @@ export default function UserTable() {
   // Function to handle delete button click
   const handleDelete = async (userId: string) => {
     try {
-      const response = await fetch(`https://groceries-to-go-back-end.vercel.app//api/users/delete`, {
+      const response = await fetch(`https://groceries-to-go-back-end.vercel.app/api/users/delete`, {
         method: "POST",
         body: JSON.stringify({
           id: userId,
@@ -189,64 +189,64 @@ export default function UserTable() {
   };
 
   // Function to handle role selection
-  const handleRoleChange = async ({
-    // userId,
-    roleId,
-    roleName,
-  }: {
-    // userId: string;
-    roleId: string;
-    roleName: string;
-  }) => {
-    try {
-      // Find the user to update
-      // const userToUpdate = usersWithRoles.find(
-      //   (item) => item.user._id === userId
-      // );
+  // const handleRoleChange = async ({
+  //   // userId,
+  //   roleId,
+  //   roleName,
+  // }: {
+  //   // userId: string;
+  //   roleId: string;
+  //   roleName: string;
+  // }) => {
+  //   try {
+  //     // Find the user to update
+  //     // const userToUpdate = usersWithRoles.find(
+  //     //   (item) => item.user._id === userId
+  //     // );
 
-      if (roleId && roleName) {
-        // Create updated user data
-        // const updatedUserData = {
-        //   ...userToUpdate.user,
-        //   role_id: roleId,
-        // };
+  //     if (roleId && roleName) {
+  //       // Create updated user data
+  //       // const updatedUserData = {
+  //       //   ...userToUpdate.user,
+  //       //   role_id: roleId,
+  //       // };
 
-        // Send update to server
-        const response = await fetch(`https://groceries-to-go-back-end.vercel.app//api/role/update`, {
-          method: "POST",
-          body: JSON.stringify({
-            role_name: roleName,
-            role_id: roleId,
-          }),
-        });
+  //       // Send update to server
+  //       const response = await fetch(`https://groceries-to-go-back-end.vercel.app/api/role/update`, {
+  //         method: "POST",
+  //         body: JSON.stringify({
+  //           role_name: roleName,
+  //           role_id: roleId,
+  //         }),
+  //       });
 
-        if (response.ok) {
-          // Update local state
-          setUsersWithRoles((prevUsers) =>
-            prevUsers.map((item) =>
-              item.user._id === userId
-                ? {
-                    ...item,
-                    user: { ...item.user, role_id: roleId },
-                    role: { ...item.role, _id: roleId, role_name: roleName },
-                  }
-                : item
-            )
-          );
-        }
-      }
+  //       if (response.ok) {
+  //         // Update local state
+  //         setUsersWithRoles((prevUsers) =>
+  //           prevUsers.map((item) =>
+  //             item.user._id === userId
+  //               ? {
+  //                   ...item,
+  //                   user: { ...item.user, role_id: roleId },
+  //                   role: { ...item.role, _id: roleId, role_name: roleName },
+  //                 }
+  //               : item
+  //           )
+  //         );
+  //       }
+  //     }
 
-      // Close the dropdown
-      setOpenDropdownId(null);
-    } catch (error) {
-      console.error("Error updating role:", error);
-    }
-  };
+  //     // Close the dropdown
+  //     setOpenDropdownId(null);
+  //   } catch (error) {
+  //     console.error("Error updating role:", error);
+  //   }
+  // };
 
   // Toggle dropdown visibility
-  const toggleDropdown = (userId: string) => {
-    setOpenDropdownId(openDropdownId === userId ? null : userId);
-  };
+  // const toggleDropdown = (userId: string) => {
+  //   setOpenDropdownId(openDropdownId === userId ? null : userId);
+  // };
 
   if (isLoading) {
     return (

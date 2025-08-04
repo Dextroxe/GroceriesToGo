@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import style from "./Profile.module.css";
 import profilepic from "../../assets/profilepc.jpg";
@@ -6,22 +6,22 @@ import { useCookies } from "react-cookie";
 
 const Profile = () => {
   const [editSection, setEditSection] = useState(null);
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies, ,] = useCookies(["token"]);
   // let email = "";
   // if (cookies.token) {
   //   const decodeCookie = atob(cookies.token);
   //   email = JSON.parse(decodeCookie).email;
   // }
 
-  const [user, setUser] = useState({});
-  const [role, setRole] = useState({});
+  const [user, setUser] = useState<any>({});
+  const [role, setRole] = useState<any>({});
   useEffect(() => {
     const fetchUser = async () => {
       try {
         if (cookies.token) {
           const decodeCookie = await atob(cookies.token);
           const email = await JSON.parse(decodeCookie).email;
-          const res = await fetch(`https://groceries-to-go-back-end.vercel.app//api/users/${email}`);
+          const res = await fetch(`https://groceries-to-go-back-end.vercel.app/api/users/${email}`);
           if (res.ok) {
             const data = await res.json();
 
@@ -30,7 +30,7 @@ const Profile = () => {
             console.log(data);
           }
         }
-      } catch (error) {}
+      } catch (error) { }
     };
     fetchUser();
   }, []);
@@ -44,8 +44,8 @@ const Profile = () => {
       phone: "",
       address: "",
     },
-  });
-  const handleEdit = (section) => {
+  } as any);
+  const handleEdit = (section:any) => {
     setEditSection(section);
   };
   const handleBlur = () => {

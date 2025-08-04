@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 
 const Commonheader = () => {
   // Close dropdowns when clicking outside
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [cookies, , removeCookie] = useCookies(["token"]);
   const navigate = useNavigate();
   const [header, setHeader] = useState("");
   let role = "";

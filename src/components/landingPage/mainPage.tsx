@@ -1,5 +1,4 @@
 import Features from "./Features";
-import Footer from "./Footer";
 import HeroSection from "./HeroSection";
 import HomrPageFooter from "./HomePageFooter";
 import Navbar from "./Navbar";

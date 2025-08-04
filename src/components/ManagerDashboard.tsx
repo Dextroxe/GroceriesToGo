@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import toast from "react-hot-toast";
 
 interface Product {
   product_id: string;
@@ -10,27 +9,36 @@ interface Product {
   category: string;
   cost_price: number;
   stock_quantity: number;
+  reorder_stock_level: number;
+}
+
+interface ApiResponse {
+  data: {
+    products: Product[];
+    lowStocksItem: number;
+    totalSum: number;
+    totalStockQnt: number;
+  };
 }
 
 export function ManagerDashboard() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ApiResponse[]>([]);
+  const [, setFilteredProducts] = useState<Product[]>([]);
   const [newQuantity, setNewQuantity] = useState<number>(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Product | null;
-    direction: "ascending" | "descriptionending" | null;
+    direction: "ascending" | "descending" | null;
   }>({ key: null, direction: null });
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [filterCategory, setFilteredCategory] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [, setIsSidebarOpen] = useState(true);
+  const [, setIsUserMenuOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [, setIsFilterDropdownOpen] = useState(false);
   const [lowStockItems, setLowStockItems] = useState(0);
   const [totalSum, setTotalSum] = useState(0);
   const [totalStockQnt, setTotalStockQnt] = useState(0);
@@ -90,25 +98,18 @@ export function ManagerDashboard() {
     const fetchProducts = async () => {
       setIsLoading(true);
       try {
-        // In a real app, adjust the URL as needed
         const response = await fetch(
-          "https://groceries-to-go-back-end.vercel.app//api/product/fetchDashboardDetails",
+          "https://groceries-to-go-back-end.vercel.app/api/product/fetchDashboardDetails",
           { method: "GET" }
         );
         if (response.ok) {
-          const data: Product[] = await response.json();
+          const data: any = await response.json();
           setProducts([data]);
           setFilteredProducts([data]);
-          setFilteredCategory(data?.data?.products);
+          setFilteredCategory(data?.data?.products || []);
           setLowStockItems(data.data.lowStocksItem);
           setTotalSum(data.data.totalSum);
           setTotalStockQnt(data.data.totalStockQnt);
-          // const data= await response.json();
-          // console.log(data);
-          // setProducts(data.data.products);
-          // setFilteredProducts(data);
-          // setLowStockItems(data.data.setLowStockItems);
-          // setTotalSum(data.data.totalSum);
         } else {
           console.error("Failed to fetch products");
         }
@@ -119,74 +120,45 @@ export function ManagerDashboard() {
       }
     };
 
-    // Simulate API call with mock data for demonstration
-    setTimeout(() => {
-      // setProducts(mockProducts);
-      // setFilteredProducts(mockProducts);
-      setIsLoading(false);
-    }, 1000);
     fetchProducts();
   }, [isUpdateModalOpen]);
 
   // Filter and sort products
   useEffect(() => {
-    let result = filterCategory;
-    // let newResult = [];
+    const allProducts = products?.[0]?.data?.products || [];
+    
+    let filteredResults = allProducts;
+
     // Filter by category
     if (selectedCategory !== "all") {
-      // setFilteredCategory(products?.[0]?.data?.products);
-      setFilteredCategory(
-        products?.[0]?.data?.products.filter((product) =>
-          product.category
-            ?.toLowerCase()
-            .includes(selectedCategory?.toLowerCase())
-        )
+      filteredResults = allProducts.filter((product: Product) =>
+        product.category
+          ?.toLowerCase()
+          .includes(selectedCategory?.toLowerCase())
       );
-    } else {
-      setFilteredCategory(products?.[0]?.data?.products);
     }
-    // console.log(products?.[0]?.data?.products);
-    // console.log({ result });
-    // const copyFilter = filterCategory;
-    // setFilteredCategory(
-    //   copyFilter.filter((product) =>
-    //     product.product_name.toLowerCase().includes(search.toLowerCase().trim())
-    //   )
-    // );
-    // if (search === "") {
-    //   setFilteredCategory(filterCategory);
-    // }
+
     // Filter by search query
     if (search) {
       const lowerCaseQuery = search.toLowerCase();
-      setFilteredCategory(
-        products?.[0]?.data?.products?.filter((product) =>
-          product.product_name.toLowerCase().includes(lowerCaseQuery)
-        )
+      filteredResults = allProducts.filter((product: Product) =>
+        product.product_name.toLowerCase().includes(lowerCaseQuery)
       );
     }
-    // Sort products
-    // if (sortConfig.key && sortConfig.direction) {
-    //   result.sort((a, b) => {
-    //     if (a[sortConfig.key!] < b[sortConfig.key!]) {
-    //       return sortConfig.direction === "ascending" ? -1 : 1;
-    //     }
-    //     if (a[sortConfig.key!] > b[sortConfig.key!]) {
-    //       return sortConfig.direction === "ascending" ? 1 : -1;
-    //     }
-    //     return 0;
-    //   });
-    // }
-    // setFilteredProducts(result);
-  }, [selectedCategory, search]);
+
+    setFilteredCategory(filteredResults);
+  }, [selectedCategory, search, products]);
 
   // Update stock for a selected product
-  const updateStock = async (product_id, newQuantity) => {
+  const updateStock = async (product_id: string, newQuantity: number) => {
     if (!selectedProduct || newQuantity < 0) return;
     console.log(product_id, newQuantity);
     try {
-      const response = await fetch("https://groceries-to-go-back-end.vercel.app//api/product/update", {
+      const response = await fetch("https://groceries-to-go-back-end.vercel.app/api/product/update", {
         method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           product_id: product_id,
           stock_quantity: newQuantity,
@@ -195,12 +167,18 @@ export function ManagerDashboard() {
 
       if (response.ok) {
         const updatedProduct: Product = await response.json();
-        setProducts((prevProducts) =>
-          prevProducts.map((product) =>
-            product.product_id === updatedProduct.product_id
-              ? { ...product, quantity: newQuantity }
-              : product
-          )
+        setProducts((prevProducts: ApiResponse[]) =>
+          prevProducts.map((productData: ApiResponse) => ({
+            ...productData,
+            data: {
+              ...productData.data,
+              products: productData.data.products.map((product: Product) =>
+                product.product_id === updatedProduct.product_id
+                  ? { ...product, stock_quantity: newQuantity }
+                  : product
+              )
+            }
+          }))
         );
         setIsUpdateModalOpen(false);
         setNewQuantity(0);
@@ -213,12 +191,18 @@ export function ManagerDashboard() {
       console.error("Error updating stock:", error);
 
       // For demo purposes, update the product locally
-      setProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product.product_id === selectedProduct.product_id
-            ? { ...product, quantity: newQuantity }
-            : product
-        )
+      setProducts((prevProducts: ApiResponse[]) =>
+        prevProducts.map((productData: ApiResponse) => ({
+          ...productData,
+          data: {
+            ...productData.data,
+            products: productData.data.products.map((product: Product) =>
+              product.product_id === selectedProduct.product_id
+                ? { ...product, stock_quantity: newQuantity }
+                : product
+            )
+          }
+        }))
       );
       setIsUpdateModalOpen(false);
       setNewQuantity(0);
@@ -228,12 +212,12 @@ export function ManagerDashboard() {
 
   // Handle sorting
   const requestSort = (key: keyof Product) => {
-    let direction: "ascending" | "descriptionending" | null = "ascending";
+    let direction: "ascending" | "descending" | null = "ascending";
 
     if (sortConfig.key === key) {
       if (sortConfig.direction === "ascending") {
-        direction = "descriptionending";
-      } else if (sortConfig.direction === "descriptionending") {
+        direction = "descending";
+      } else if (sortConfig.direction === "descending") {
         direction = null;
       }
     }
@@ -242,31 +226,18 @@ export function ManagerDashboard() {
   };
 
   // Get unique categories
-  const categories = [
+  const categories: string[] = [
     "all",
     ...Array.from(
-      new Set(products?.[0]?.data.products?.map((product) => product.category))
+      new Set(products?.[0]?.data?.products?.map((product: Product) => product.category) || [])
     ),
   ];
-  console.log(categories);
-  console.log(products);
 
   // Calculate dashboard stats
   const totalProducts =
     products.length > 0 && products[0].data.products
       ? products[0].data.products.length
       : 0;
-  const totalStock = products.reduce(
-    (sum, product) => sum + product.quantity,
-    0
-  );
-  const lowStockCount = products.filter(
-    (product) => product.quantity < 10
-  ).length;
-  const totalValue = products.reduce(
-    (sum, product) => sum + product.costPrice * product.quantity,
-    0
-  );
 
   // Get sort indicator
   const getSortIndicator = (key: keyof Product) => {
@@ -417,7 +388,7 @@ export function ManagerDashboard() {
                       </button>
                       {isCategoryDropdownOpen && (
                         <div className="absolute right-0 z-10 mt-2 w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 max-h-60 overflow-auto">
-                          {categories.map((category) => (
+                          {categories.map((category: string) => (
                             <button
                               key={category}
                               onClick={() => {
@@ -436,51 +407,6 @@ export function ManagerDashboard() {
                         </div>
                       )}
                     </div>
-                    {/* <div className="relative" ref={filterDropdownRef}>
-                      <button
-                        onClick={() =>
-                          setIsFilterDropdownOpen(!isFilterDropdownOpen)
-                        }
-                        className="inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="mr-2 h-4 w-4"
-                        >
-                          <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
-                        </svg>
-                        Filter
-                      </button>
-                      {isFilterDropdownOpen && (
-                        <div className="absolute right-0 z-10 mt-2 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-                          <div className="py-1">
-                            <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                              Filter by
-                            </div>
-                            <button className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
-                              Low Stock First
-                            </button>
-                            <button className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
-                              High Stock First
-                            </button>
-                            <button className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
-                              Price: Low to High
-                            </button>
-                            <button className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50">
-                              Price: High to Low
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div> */}
                   </div>
                 </div>
 
@@ -489,16 +415,6 @@ export function ManagerDashboard() {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        {/* <th
-                          scope="col"
-                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                          onClick={() => requestSort("product_id")}
-                        >
-                          <div className="flex items-center">
-                            Product ID
-                            {getSortIndicator("product_id")}
-                          </div>
-                        </th> */}
                         <th
                           scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
@@ -513,7 +429,7 @@ export function ManagerDashboard() {
                           scope="col"
                           className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          description
+                          Description
                         </th>
                         <th
                           scope="col"
@@ -528,31 +444,29 @@ export function ManagerDashboard() {
                         <th
                           scope="col"
                           className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                          onClick={() => requestSort("costPrice")}
+                          onClick={() => requestSort("cost_price")}
                         >
                           <div className="flex items-center justify-end">
                             Cost Price
-                            {getSortIndicator("costPrice")}
+                            {getSortIndicator("cost_price")}
                           </div>
                         </th>
                         <th
                           scope="col"
-                          className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                          // onClick={() => requestSort("costPrice")}
+                          className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
                           <div className="flex items-center justify-end">
-                            threshold qty
-                            {/* {getSortIndicator("costPrice")} */}
+                            Threshold Qty
                           </div>
                         </th>
                         <th
                           scope="col"
                           className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                          onClick={() => requestSort("quantity")}
+                          onClick={() => requestSort("stock_quantity")}
                         >
                           <div className="flex items-center justify-end">
                             Quantity
-                            {getSortIndicator("quantity")}
+                            {getSortIndicator("stock_quantity")}
                           </div>
                         </th>
                         <th
@@ -573,7 +487,7 @@ export function ManagerDashboard() {
                             Loading products...
                           </td>
                         </tr>
-                      ) : filteredProducts.length === 0 ? (
+                      ) : filterCategory.length === 0 ? (
                         <tr>
                           <td
                             colSpan={7}
@@ -583,16 +497,13 @@ export function ManagerDashboard() {
                           </td>
                         </tr>
                       ) : (
-                        filterCategory?.map((product, index) => (
-                          <tr key={index} className="hover:bg-gray-50">
-                            {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              {product?.product_id}
-                            </td> */}
+                        filterCategory.map((product: Product, index: number) => (
+                          <tr key={product.product_id || index} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {product?.product_name}
+                              {product.product_name}
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                              {product?.description}
+                              {product.description}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -607,21 +518,19 @@ export function ManagerDashboard() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                               <div className="flex items-center justify-end">
-                                {product?.stock_quantity <
-                                product?.reorder_stock_level ? (
+                                {product.stock_quantity < product.reorder_stock_level ? (
                                   <span className="inline-flex items-center mr-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                     Low
                                   </span>
                                 ) : null}
-                                {product?.stock_quantity}
+                                {product.stock_quantity}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <button
                                 onClick={() => {
                                   setSelectedProduct(product);
-                                  console.log({ product });
-                                  setNewQuantity(product?.stock_quantity);
+                                  setNewQuantity(product.stock_quantity);
                                   setIsUpdateModalOpen(true);
                                 }}
                                 className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -657,10 +566,10 @@ export function ManagerDashboard() {
                       <p className="text-sm text-gray-700">
                         Showing{" "}
                         <span className="font-medium">
-                          {filteredProducts.length}
+                          {filterCategory.length}
                         </span>{" "}
                         of{" "}
-                        <span className="font-medium">{products.length}</span>{" "}
+                        <span className="font-medium">{totalProducts}</span>{" "}
                         products
                       </p>
                     </div>
@@ -739,10 +648,10 @@ export function ManagerDashboard() {
                     {selectedProduct && (
                       <div className="mt-2">
                         <p className="font-medium">
-                          {selectedProduct?.product_name}
+                          {selectedProduct.product_name}
                         </p>
                         <p className="text-sm text-gray-500">
-                          ID: {selectedProduct?.product_id}
+                          ID: {selectedProduct.product_id}
                         </p>
                         <p className="text-sm text-gray-500">
                           Current quantity: {selectedProduct.stock_quantity}
@@ -793,7 +702,7 @@ export function ManagerDashboard() {
                 <button
                   type="button"
                   onClick={() => {
-                    updateStock(selectedProduct?.product_id, newQuantity);
+                    updateStock(selectedProduct?.product_id || "", newQuantity);
                   }}
                   disabled={newQuantity < 0}
                   className="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"

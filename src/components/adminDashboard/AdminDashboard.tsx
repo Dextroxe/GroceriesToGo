@@ -21,13 +21,12 @@ interface Product {
 }
 
 export function AdminDashboard() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<any>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [newQuantity, setNewQuantity] = useState<number>(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<{
     key: keyof Product | null;
     direction: "ascending" | "descriptionending" | null;
@@ -36,10 +35,10 @@ export function AdminDashboard() {
   const [filterCategory, setFilteredCategory] = useState<Product[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [, setIsSidebarOpen] = useState(true);
+  const [, setIsUserMenuOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
-  const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
+  const [, setIsFilterDropdownOpen] = useState(false);
   const [lowStockItems, setLowStockItems] = useState(0);
   const [totalSum, setTotalSum] = useState(0);
   const [totalStockQnt, setTotalStockQnt] = useState(0);
@@ -103,11 +102,11 @@ export function AdminDashboard() {
       try {
         // In a real app, adjust the URL as needed
         const response = await fetch(
-          "https://groceries-to-go-back-end.vercel.app//api/product/fetchDashboardDetails",
+          "https://groceries-to-go-back-end.vercel.app/api/product/fetchDashboardDetails",
           { method: "GET" }
         );
         if (response.ok) {
-          const data: Product[] = await response.json();
+          const data: any = await response.json();
           setProducts([data]);
           setFilteredProducts([data]);
           setFilteredCategory(data?.data?.products);
@@ -141,13 +140,13 @@ export function AdminDashboard() {
 
   // Filter and sort products
   useEffect(() => {
-    const result = filterCategory;
+    // const result = filterCategory;
     // let newResult = [];
     // Filter by category
     if (selectedCategory !== "all") {
       // setFilteredCategory(products?.[0]?.data?.products);
       setFilteredCategory(
-        products?.[0]?.data?.products.filter((product) =>
+        products?.[0]?.data?.products.filter((product:any) =>
           product.category
             ?.toLowerCase()
             .includes(selectedCategory?.toLowerCase())
@@ -171,7 +170,7 @@ export function AdminDashboard() {
     if (search) {
       const lowerCaseQuery = search.toLowerCase();
       setFilteredCategory(
-        products?.[0]?.data?.products?.filter((product) =>
+        products?.[0]?.data?.products?.filter((product:any) =>
           product.product_name.toLowerCase().includes(lowerCaseQuery)
         )
       );
@@ -192,11 +191,11 @@ export function AdminDashboard() {
   }, [selectedCategory, search]);
 
   // Update stock for a selected product
-  const updateStock = async (product_id, newQuantity) => {
+  const updateStock = async (product_id:any, newQuantity:any) => {
     if (!selectedProduct || newQuantity < 0) return;
     console.log(product_id, newQuantity);
     try {
-      const response = await fetch("https://groceries-to-go-back-end.vercel.app//api/product/update", {
+      const response = await fetch("https://groceries-to-go-back-end.vercel.app/api/product/update", {
         method: "POST",
         body: JSON.stringify({
           product_id: product_id,
@@ -206,8 +205,8 @@ export function AdminDashboard() {
 
       if (response.ok) {
         const updatedProduct: Product = await response.json();
-        setProducts((prevProducts) =>
-          prevProducts.map((product) =>
+        setProducts((prevProducts:any) =>
+          prevProducts.map((product:any) =>
             product.product_id === updatedProduct.product_id
               ? { ...product, quantity: newQuantity }
               : product
@@ -224,8 +223,8 @@ export function AdminDashboard() {
       console.error("Error updating stock:", error);
 
       // For demo purposes, update the product locally
-      setProducts((prevProducts) =>
-        prevProducts.map((product) =>
+      setProducts((prevProducts:any) =>
+        prevProducts.map((product:any) =>
           product.product_id === selectedProduct.product_id
             ? { ...product, quantity: newQuantity }
             : product
@@ -243,7 +242,7 @@ export function AdminDashboard() {
 
     try {
       const response = await fetch(
-        "https://groceries-to-go-back-end.vercel.app//api/product/updateAll",
+        "https://groceries-to-go-back-end.vercel.app/api/product/updateAll",
         {
           method: "POST",
           headers: {
@@ -329,7 +328,7 @@ export function AdminDashboard() {
   const categories = [
     "all",
     ...Array.from(
-      new Set(products?.[0]?.data.products?.map((product) => product.category))
+      new Set(products?.[0]?.data.products?.map((product:any) => product.category))
     ),
   ];
 
@@ -338,17 +337,17 @@ export function AdminDashboard() {
     products.length > 0 && products[0].data.products
       ? products[0].data.products.length
       : 0;
-  const totalStock = products.reduce(
-    (sum, product) => sum + product.quantity,
-    0
-  );
-  const lowStockCount = products.filter(
-    (product) => product.quantity < 10
-  ).length;
-  const totalValue = products.reduce(
-    (sum, product) => sum + product.costPrice * product.quantity,
-    0
-  );
+  // const totalStock = products.reduce(
+  //   (sum, product) => sum + product.quantity,
+  //   0
+  // );
+  // const lowStockCount = products.filter(
+  //   (product) => product.quantity < 10
+  // ).length;
+  // const totalValue = products.reduce(
+  //   (sum, product) => sum + product.costPrice * product.quantity,
+  //   0
+  // );
 
   // Get sort indicator
   const getSortIndicator = (key: keyof Product) => {
@@ -501,9 +500,9 @@ export function AdminDashboard() {
                         <div className="absolute right-0 z-10 mt-2 w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 max-h-60 overflow-auto">
                           {categories.map((category) => (
                             <button
-                              key={category}
+                              key={category as any}
                               onClick={() => {
-                                setSelectedCategory(category);
+                                setSelectedCategory(category as any);
                                 setIsCategoryDropdownOpen(false);
                               }}
                               className={`block w-full px-4 py-2 text-left text-sm ${
@@ -555,21 +554,21 @@ export function AdminDashboard() {
                         <th
                           scope="col"
                           className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                          onClick={() => requestSort("costPrice")}
+                          onClick={() => requestSort("costPrice" as any)}
                         >
                           <div className="flex items-center justify-end">
                             Cost Price
-                            {getSortIndicator("costPrice")}
+                            {getSortIndicator("costPrice" as any)}
                           </div>
                         </th>
                         <th
                           scope="col"
                           className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                          onClick={() => requestSort("quantity")}
+                          onClick={() => requestSort("quantity" as any)}
                         >
                           <div className="flex items-center justify-end">
                             Quantity
-                            {getSortIndicator("quantity")}
+                            {getSortIndicator("quantity" as any)}
                           </div>
                         </th>
                         <th
@@ -600,7 +599,7 @@ export function AdminDashboard() {
                           </td>
                         </tr>
                       ) : (
-                        filterCategory?.map((product, index) => (
+                        filterCategory?.map((product:any, index) => (
                           <tr key={index} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               {product?.product_name}
@@ -619,7 +618,7 @@ export function AdminDashboard() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
                               <div className="flex items-center justify-end">
                                 {product?.stock_quantity <
-                                product?.reorder_stock_level ? (
+                                product?.reorder_stock_level  ? (
                                   <span className="inline-flex items-center mr-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                     Low
                                   </span>
@@ -1022,7 +1021,7 @@ export function AdminDashboard() {
                               src={imagePreview || "/placeholder.svg"}
                               alt="Product preview"
                               className="w-full h-full object-contain"
-                              onError={(e) => {
+                              onError={(e:any) => {
                                 e.currentTarget.onerror = null;
                                 e.currentTarget.src = ""; // Clear the src
                                 e.currentTarget.alt = "Image not available";
