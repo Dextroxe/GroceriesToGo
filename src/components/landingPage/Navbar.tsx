@@ -11,7 +11,7 @@ const Navbar = () => {
 
   return (
     <nav className="flex justify-between items-center px-8 py-4 bg-white shadow-md">
-      <div className="text-2xl font-bold text-green-600">GroceriesToGo</div>
+      <div className="text-2xl font-bold text-green-600">MyGroceryBox</div>
       {/* <ul className="flex space-x-6 text-gray-700">
         <li>
           <Link to="/" className="hover:text-green-500">
